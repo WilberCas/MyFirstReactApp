@@ -3,23 +3,30 @@ const React = require('react');
 class App extends React.Component {
     constructor(props){
         super(props);
+        this.state = {data: []};
     }
     render() {
         // Does API call to the node server
-        function getPlaylistId() {
+        let getPlaylistId = () => {
             let name = document.getElementById("playlistName").value;
             fetch('http://localhost:3001/id/'+name,{
                 mehtod:'GET'
             })
             .then((resp) => resp.json()) // Transform into json
             .then((data) =>{
-                renderTable(data);
+                this.setState((state) => {
+                    return {data: data};
+                })
             });
         }
         // Render the table with the properties required
-        function renderTable(data) {
-            for(let el of data){
-                document.getElementById('result').innerHTML += `<tr><td>${el.PlaylistId}</td><td>${el.Name}</td></tr>`;
+        let renderTable = () => {
+            let childrenTable = [];
+            if(this.state.data){
+                for(let el of this.state.data){
+                    childrenTable.push(<tr><td>{el.PlaylistId}</td><td>{el.Name}</td></tr>);
+                }
+                return childrenTable;
             }
         }
         return(
@@ -36,7 +43,7 @@ class App extends React.Component {
                             <th>Name</th>
                         </tr>
                         </thead>
-                        <tbody id="result"></tbody>
+                        <tbody>{renderTable()}</tbody>
                     </table>
                 </div>
             </div>
